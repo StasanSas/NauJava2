@@ -11,7 +11,7 @@ public class WorkingWithArray {
         var n = scanner.nextInt();
         var generatedArray = getRandomArray(n);
         var arrayInString = Arrays.toString(generatedArray);
-        System.out.println(arrayInString.substring(1, arrayInString.length()-2));
+        System.out.println(arrayInString.substring(1, arrayInString.length()-1));
         System.out.println(getMinModulo(generatedArray));
     }
 

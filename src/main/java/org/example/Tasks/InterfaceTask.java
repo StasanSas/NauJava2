@@ -29,7 +29,7 @@ public class InterfaceTask implements Task{
     @Override
     public void start() {
         running = true;
-        new Thread(() -> {
+        Thread tread = new Thread(() -> {
             int numBytesRead;
             byte[] bucket = new byte[2];
             while (running) {
@@ -37,11 +37,6 @@ public class InterfaceTask implements Task{
                     numBytesRead = bufferedInputStream.read(bucket, 0, bucket.length);
                     if (numBytesRead == -1)
                         break;
-                } catch (IOException e) {
-                    running = false;
-                    throw new RuntimeException(e);
-                }
-                try {
                     fileOutputStream.write(bucket, 0, numBytesRead);
                 } catch (IOException e) {
                     running = false;
@@ -49,9 +44,23 @@ public class InterfaceTask implements Task{
                 }
             }
             stoppedTread = true;
+        });
 
-        }).start();
+        Thread.UncaughtExceptionHandler h = (th, ex) -> {
+            stoppedTread = true;
+            try {
+                bufferedInputStream.close();
+                fileOutputStream.close();
+            } catch (IOException e) {
+                throw new RuntimeException(ex);
+            }
+        };
+
+        tread.setUncaughtExceptionHandler(h);
+        tread.start();
     }
+
+
 
     @Override
     public void stop() throws IOException{
